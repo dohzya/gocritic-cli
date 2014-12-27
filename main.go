@@ -17,6 +17,7 @@ func main() {
 	o := flag.String("o", "-", "Output file (default: STDOUT)")
 	before := flag.Bool("before", false, "Return before only")
 	after := flag.Bool("after", false, "Return after only")
+	tags := flag.Bool("tags", false, "Keep tags")
 	flag.Parse()
 
 	var input io.Reader
@@ -42,18 +43,26 @@ func main() {
 		output = file
 	}
 
-	var opt func(*gocritic.Options)
+	var filter func(*gocritic.Options)
 	if *before == *after {
-		opt = gocritic.FilterNone
+		filter = gocritic.FilterShowAll
 	} else if *before {
-		opt = gocritic.FilterBefore
+		if *tags {
+			filter = gocritic.FilterOnlyBefore
+		} else {
+			filter = gocritic.FilterOnlyRawBefore
+		}
 	} else {
-		opt = gocritic.FilterAfter
+		if *tags {
+			filter = gocritic.FilterOnlyAfter
+		} else {
+			filter = gocritic.FilterOnlyRawAfter
+		}
 	}
 
 	if *md {
 		bMd := bytes.NewBuffer(make([]byte, 0))
-		if _, err := gocritic.Critic(bMd, input, opt); err != nil {
+		if _, err := gocritic.Critic(bMd, input, filter); err != nil {
 			fmt.Fprintf(os.Stderr, "[gocritic] Error during critic parsing: %s\n", err.Error())
 			return
 		}
@@ -63,7 +72,7 @@ func main() {
 			return
 		}
 	} else {
-		if _, err := gocritic.Critic(output, input, opt); err != nil {
+		if _, err := gocritic.Critic(output, input, filter); err != nil {
 			fmt.Fprintf(os.Stderr, "[gocritic] Error during critic parsing: %s\n", err.Error())
 			return
 		}
