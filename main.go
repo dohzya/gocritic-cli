@@ -171,7 +171,7 @@ var tmplFooter = `</div>
 				var comment = comments[i];
 				var popover = document.createElement('span');
 				popover.className = 'popover';
-				wrapper.insertBefore(popover, comment);
+				wrapper.insertOriginal(popover, comment);
 				wrapper.removeChild(comment);
 				popover.innerHTML = '&#8225;';
 				popover.appendChild(comment);
@@ -195,8 +195,8 @@ func main() {
 	md := flag.Bool("md", false, "Use markdown parser")
 	i := flag.String("i", "-", "Input file (default: STDIN)")
 	o := flag.String("o", "-", "Output file (default: STDOUT)")
-	before := flag.Bool("before", false, "Return before only")
-	after := flag.Bool("after", false, "Return after only")
+	original := flag.Bool("original", false, "Render original sources only")
+	edited := flag.Bool("edited", false, "Render edited sources only")
 	tags := flag.Bool("tags", false, "Keep tags")
 	html := flag.Bool("html", false, "Create a full HTML page")
 	flag.Parse()
@@ -225,19 +225,19 @@ func main() {
 	}
 
 	var filter func(*gocritic.Options)
-	if *before == *after {
+	if *original == *edited {
 		filter = gocritic.FilterShowAll
-	} else if *before {
+	} else if *original {
 		if *tags {
-			filter = gocritic.FilterOnlyBefore
+			filter = gocritic.FilterOnlyOriginal
 		} else {
-			filter = gocritic.FilterOnlyRawBefore
+			filter = gocritic.FilterOnlyRawOriginal
 		}
 	} else {
 		if *tags {
-			filter = gocritic.FilterOnlyAfter
+			filter = gocritic.FilterOnlyEdited
 		} else {
-			filter = gocritic.FilterOnlyRawAfter
+			filter = gocritic.FilterOnlyRawEdited
 		}
 	}
 
