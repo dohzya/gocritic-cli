@@ -198,7 +198,14 @@ func main() {
 	edited := flag.Bool("edited", false, "Render edited sources only")
 	tags := flag.Bool("tags", false, "Keep tags")
 	html := flag.Bool("html", false, "Create a full HTML page")
+	version := flag.Bool("v", false, "Show the version and quit")
 	flag.Parse()
+
+	if *version {
+		fmt.Printf("gocritic:     %s\n", gocritic.Version)
+		fmt.Printf("gocritic-cli: %s\n", Version)
+		return
+	}
 
 	var input io.Reader
 	if len(flag.Args()) == 0 {
