@@ -193,7 +193,6 @@ var tmplFooter = `</div>
 
 func main() {
 	md := flag.Bool("md", false, "Use markdown parser")
-	i := flag.String("i", "-", "Input file (default: STDIN)")
 	o := flag.String("o", "-", "Output file (default: STDOUT)")
 	original := flag.Bool("original", false, "Render original sources only")
 	edited := flag.Bool("edited", false, "Render edited sources only")
@@ -202,12 +201,13 @@ func main() {
 	flag.Parse()
 
 	var input io.Reader
-	if *i == "" || *i == "-" {
+	if len(flag.Args()) == 0 {
 		input = os.Stdin
 	} else {
-		file, err := os.Open(*i)
+		filename := flag.Arg(0)
+		file, err := os.Open(filename)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "[gocritic] Can't open %s: %s\n", *i, err.Error())
+			fmt.Fprintf(os.Stderr, "[gocritic] Can't open %s: %s\n", filename, err.Error())
 			return
 		}
 		input = file
