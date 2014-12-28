@@ -66,7 +66,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "[gocritic] Error during critic parsing: %s\n", err.Error())
 			return
 		}
-		bHTML := blackfriday.MarkdownHtml(bMd.Bytes(), blackfriday.CommonExtensions)
+		bHTML := blackfriday.MarkdownCommon(bMd.Bytes())
 		if _, err := output.Write(bHTML); err != nil {
 			fmt.Fprintf(os.Stderr, "[gocritic] Error while writing result: %s\n", err.Error())
 			return
